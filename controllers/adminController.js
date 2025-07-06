@@ -1,6 +1,55 @@
 import Admin from "../models/adminModel.js";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
+
+// Admin Login 
+const adminLogin = async (req, res) => {
+  try {
+    console.log(" :: /"+req.body);
+    const { email, password } = req.body;
+  
+
+    // Validate email and password
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required" });
+    }
+
+    // Check if email and password of the (Grand Master)
+    if (email === process.env.GrandMaster_EMAIL && password === process.env.GrandMaster_PASS) {
+      const token = jwt.sign(
+        { email }, // Payload
+        process.env.JWT_SECRET, // Secret key
+        { expiresIn: '5d' } // Token expiration (5 day)
+      );
+      return res.status(200).json({ success: true, token, role: "Grand Master", name: "Grand Master" });
+    }
+    // Check if the admin exists in the database
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+    // Compare the provided password with the hashed password in the database
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (isMatch) {
+      // Generate a JWT token for the admin
+      const token = jwt.sign(
+        { email}, // Payload
+        process.env.JWT_SECRET, // Secret key
+        { expiresIn: '5d' } // Token expiration (5 days)
+      );
+      // Return the token and admin details
+      return res.status(200).json({ success: true, token, role: admin.role, name: `${admin.name} ${admin.lastName}` });
+    } else {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+  } catch (error) {
+    console.error("Error during admin login:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
 // Create Admin
  const createAdmin = async (req, res) => {
   try {
@@ -111,4 +160,27 @@ const editAdmin = async (req, res) => {
   }
 };
 
-export {createAdmin , listAdmins ,editAdmin ,deleteAdmin}
+//get admin  by token from the request header
+const getAdmin = async (req, res) => {
+  try {
+    const email = req.body.email; // Assuming Id is set by auth middleware
+    
+    // Check if email of the (Grand Master) return info of the grand Master
+    if (email === process.env.GrandMaster_EMAIL){
+      res.status(200).json({ name : "Grand Master" , role:'Grand Master'});
+    }
+    // if  the admin of the type  (Master/admin)
+    else {
+      const admin = await Admin.findOne({email}).select("-password");
+      if (!email || !admin)  {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+      res.status(200).json(admin);
+    }
+  } catch (error) {
+    console.error("Error fetching admin info:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};  
+
+export {adminLogin,createAdmin , listAdmins ,editAdmin ,deleteAdmin , getAdmin}

@@ -80,8 +80,8 @@ const getSummaryCardStats = async (req, res) => {
   }
 };
 
-// 2️⃣. get LineChart Stats
-const getLineChartStats = async (req, res) => {
+// 2️⃣. get Area Chart Stats
+const getAreaChartStats= async (req, res) => {
   try {  
     const twelveMonthsAgo = new Date();
     twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
@@ -351,4 +351,4 @@ const calculatePercentageChange = (current, previous) => {
 };
 
 
-export  {getSummaryCardStats , getLineChartStats ,getTableStats , getPieChartsStats}
+export  {getSummaryCardStats , getAreaChartStats ,getTableStats , getPieChartsStats}

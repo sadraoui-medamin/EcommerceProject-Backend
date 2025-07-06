@@ -24,7 +24,7 @@ const adminSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "master","grandMaster"],
+      enum: ["admin", "master","Grand Master"],
     },
   },
   { timestamps: true }

@@ -83,33 +83,6 @@ const registerUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Error during registration" });
   }
 };
-// Admin Login Route
-const adminLogin = async (req, res) => {
-  try {
-    console.log(" :: /"+req.body);
-    const { email, password } = req.body;
-
-    // Validate email and password
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: "Email and password are required" });
-    }
-
-    // Check if email and password match environment variables
-    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASS) {
-      const token = jwt.sign(
-        { email }, // Payload
-        process.env.JWT_SECRET, // Secret key
-        { expiresIn: '5d' } // Token expiration (1 day)
-      );
-      return res.status(200).json({ success: true, token });
-    } else {
-      return res.status(401).json({ success: false, message: "Invalid credentials" });
-    }
-  } catch (error) {
-    console.error("Error during admin login:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
 
 
 // Update User Function
@@ -326,4 +299,4 @@ const unbanUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 };
-export { loginUser, registerUser,adminLogin,forgetPassword,editPassword, updateUser, deleteUser,getuser,getUserById,getAllUsers,banUser,unbanUser };
+export { loginUser, registerUser,forgetPassword,editPassword, updateUser, deleteUser,getuser,getUserById,getAllUsers,banUser,unbanUser };

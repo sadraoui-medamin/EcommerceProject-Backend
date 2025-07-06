@@ -2,29 +2,19 @@ import jwt from "jsonwebtoken";
 
 const adminAuth = async (req, res, next) => {
   try {
-    const { token } = req.headers;
-    console.log(token)
-    // Check if token exists
-    if (token) {
-      return res.status(401).json({
-        success: false,
-        message: "Not Authorized for Login Retry",
-      });
-    }
+   const { token } = req.headers; // Extract token from headers
+      // Check if token is provided
+      if (!token) {
+        return res.json({
+          success: false,
+          message: "Not authorized. Please log in again.",
+        });
+      }
 
     // Verify the token
     const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Check if the decoded token matches admin credentials
-    if (
-      token_decode.email !== process.env.ADMIN_EMAIL ||
-      token_decode.password !== process.env.ADMIN_PASS
-    ) {
-      return res.status(401).json({
-        success: false,
-        message: "Not Authorized for Login Retry",
-      });
-    }
+    // return unique email from the token 
+    req.body.email = token_decode.email;
 
     // Proceed to the next middleware
     next();

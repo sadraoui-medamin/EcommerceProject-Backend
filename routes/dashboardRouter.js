@@ -1,11 +1,11 @@
 import express from "express";
- import {getSummaryCardStats , getLineChartStats ,getTableStats , getPieChartsStats } from "../controllers/dashboardController.js";
+ import {getSummaryCardStats , getAreaChartStats ,getTableStats , getPieChartsStats } from "../controllers/dashboardController.js";
 const router = express.Router();
 
 
 // Route
 router.get("/getSummaryCardStats", getSummaryCardStats);
-router.get("/getLineChartStats", getLineChartStats);
+router.get("/getAreaChartStats", getAreaChartStats);
 router.get("/getTableStats", getTableStats);
 router.get("/getPiechartStats", getPieChartsStats);
 
